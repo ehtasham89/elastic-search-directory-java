@@ -1,29 +1,33 @@
 package com.ehtasham.elasticsearchdirectory.controllers;
 
+import java.util.Map;
+import java.lang.String;
 
-//import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 
-//import com.ehtasham.todoapp.models.Todo;
-//import com.ehtasham.todoapp.repositories.TodoRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.data.domain.Sort;
-//import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-//import java.util.List;
+
 
 @RestController
-@RequestMapping("/api/todo/")
+@RequestMapping("/mobile")
 @CrossOrigin("*")
+
 public class SearchController {
-
-    @Autowired
-    //TodoRepository todoRepository;
-
-    @GetMapping("/")
-    public String listAll() {
-        
-        return "Spring is running well";
+	
+	/**
+	 * search API (GET /mobile/search?) 
+	 * that will allow the caller to retrieve one or more mobile handset record 
+	 * based on the passed search criteria.
+	 * The criteria can be any field in the handset data along with any value. 
+	 * Examples:
+	 * /search?priceEur=200. Will return 10 devices.
+	 * /search?sim=eSim. Will return 18 devices.
+	 * /search?announceDate=1999&price=200. Will return 2 devices. 
+	*/
+	
+    @GetMapping("/search")
+    public Map<String, String[]> search(HttpServletRequest httpServletRequest){
+    	return httpServletRequest.getParameterMap();
     }
    
 }
