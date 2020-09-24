@@ -19,4 +19,12 @@ public class Hardware {
 	@JsonProperty("battery")
     private String battery;
 	
+	//check key exists
+	public Boolean isFound(String key) {
+		if (key.equals("audioJack") || key.equals("gps") || key.equals("battery")) {
+			return true;
+		}
+		
+		return false;	
+	}
 }

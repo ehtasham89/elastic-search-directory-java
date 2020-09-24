@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -42,7 +43,7 @@ public class ElasticSearchDirectory {
     private String phone;
     
     @Field(type = FieldType.Text)
-    @JsonProperty("picture")
+    @JsonProperty("pictures")
     private String picture;
     
     @Field(type = Nested, includeInParent = true)
@@ -61,11 +62,12 @@ public class ElasticSearchDirectory {
     @JsonProperty("hardware")
     private List<Hardware> hardware;
     
-    public List<Hardware> getHardware() {
-        return hardware;
+
+    public Hardware getHardware(){
+        return new Hardware();
     }
 
-    public List<Release> getRelease(){
-    	return release;
+    public Release getRelease(){
+    	return new Release();
     }
 }

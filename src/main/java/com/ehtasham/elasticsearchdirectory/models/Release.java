@@ -15,4 +15,12 @@ public class Release {
 	@JsonProperty("priceEur")
     private Double priceEur;
 	
+	//check key exists
+	public Boolean isFound(String key) {
+		if (key.equals("announceDate") || key.equals("priceEur")) {
+			return true;
+		}
+		
+		return false;	
+	}
 }
