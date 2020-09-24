@@ -9,11 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.ehtasham.elasticsearchdirectory.controllers.SearchController;
 
-
 @SpringBootApplication
-@Configuration
-@ComponentScan(basePackageClasses = SearchController.class)
-@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class })
 public class ElasticSearchDirectoryApplication {
 
 	public static void main(String[] args) {
