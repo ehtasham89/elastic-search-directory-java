@@ -2,8 +2,15 @@ package com.ehtasham.elasticsearchdirectory.services;
 
 import com.ehtasham.elasticsearchdirectory.models.ElasticSearchDirectory;
 import com.ehtasham.elasticsearchdirectory.repository.ElasticSearchRepository;
+
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +34,15 @@ public class ElasticSeacrhService {
         this.direcotoryModel = elasticSearchDirectory;
     }
 
+    public ElasticSearchDirectory create(ElasticSearchDirectory document) {
+    	//IndexRequest request = new IndexRequest("people");
+        ///request.source(document, XContentType.JSON);
+    	
+    	System.out.println(document.toString());
+    	
+        return (ElasticSearchDirectory) searchRepository.save(document);
+    }
+    
     public Iterable<ElasticSearchDirectory> search(HttpServletRequest httpServletRequest, Pageable pageable) {
         BoolQueryBuilder searchQuery = QueryBuilders.boolQuery();
 

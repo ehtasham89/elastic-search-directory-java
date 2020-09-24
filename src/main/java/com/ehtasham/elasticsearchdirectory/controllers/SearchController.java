@@ -1,35 +1,37 @@
 package com.ehtasham.elasticsearchdirectory.controllers;
 
-import com.ehtasham.elasticsearchdirectory.models.ElasticSearchDirectory;
-import com.ehtasham.elasticsearchdirectory.services.ElasticSeacrhService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.String;
-import java.io.Reader;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
 
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ehtasham.elasticsearchdirectory.models.ElasticSearchDirectory;
+import com.ehtasham.elasticsearchdirectory.services.ElasticSeacrhService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 
 @RestController
 @RequestMapping("/mobile")
 @CrossOrigin("*")
-public class SearchController {
+public class SearchController<JSONArray> {
 	
 	private ElasticSeacrhService elasticSeacrhService;
 
@@ -52,60 +54,51 @@ public class SearchController {
     @GetMapping("/search")
     public Iterable<ElasticSearchDirectory> search(HttpServletRequest httpServletRequest, 
     		@PageableDefault(value = 10, page = 0) Pageable pageable){
-    	//return httpServletRequest.getParameterMap();
-    	
-    	//Map<String, String[]> query = httpServletRequest.getQueryString();
-    	
+
     	return this.elasticSeacrhService.search(httpServletRequest, pageable);
     }
     
-    /*
+    
     @GetMapping("/load-data")
-    public void JsonBulkImport(InputStream in) throws IOException, ExecutionException, InterruptedException {
-        BulkRequestBuilder bulkRequest = client.prepareBulk();
-        File jsonFilePath = new File("H:\\Work\\Data\\sample.json");
-        int count=0,noOfBatch=1;
-        //initialize jsonReader class by passing reader
-        JsonReader jsonReader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-        		
-        Gson gson = new GsonBuilder().create();
-        jsonReader.beginArray(); //start of json array
-        int numberOfRecords = 1;
-        while (jsonReader.hasNext()){ //next json array element
-            Document document = gson.fromJson(jsonReader, Document.class);
-            //do something real
-            try {
-                XContentBuilder xContentBuilder = jsonBuilder()
-                        .startObject()
-                        .field(DOC_TYPE, document.getDocType())
-                        .field(DOC_AUTHOR, document.getDocAuthor())
-                        .field(DOC_TITLE, document.getDocTitle())
-                        .field(IS_PARENT, document.isParent())
-                        .field(PARENT_DOC_ID, document.getParentDocId())
-                        .field(DOC_LANGUAGE, document.getDocLanguage())
-                        .endObject();
-                bulkRequest.add(client.prepareIndex(indexName, indexTypeName, String.valueOf(numberOfRecords))
-                        .setSource(xContentBuilder));
-                if (count==50_000) {
-                    addDocumentToESCluser(bulkRequest, noOfBatch, count);
-                    noOfBatch++;
-                    count = 0;
-                }
-            }catch (Exception e) {
-                e.printStackTrace();
-                //skip records if wrong date in input file
-            }
-            numberOfRecords++;
-            count++;
-        }
-        
-        jsonReader.endArray();
-        
-        if(count!=0){ //add remaining documents to ES
-            addDocumentToESCluser(bulkRequest,noOfBatch,count);
-        }
-        //System.out.println("Total Document Indexed : "+numberOfRecords);
+    @Async
+    public Collection<ElasticSearchDirectory> JsonBulkImport(InputStream in) throws Exception {
+    	int numberOfRecords=0;
+    	
+    	String jsonUrl = "https://a511e938-a640-4868-939e-6eef06127ca1.mock.pstmn.io/handsets/list";
+    	
+    	String jsonDocument;
+
+	    jsonDocument = readUrl(jsonUrl);
+	    	
+	    	Gson gson = new Gson(); 
+	    	
+	    	Type collectionType = new TypeToken<Collection<ElasticSearchDirectory>>(){}.getType();
+	    	Collection<ElasticSearchDirectory> enums = gson.fromJson(jsonDocument, collectionType);
+	    	
+	    	//ElasticSearchDirectory docs = gson.fromJson(jsonDocument, ElasticSearchDirectory.class);
+	    	
+	    	return enums;
     }
-    */
+    	
+    @Async
+	private static String readUrl(String urlString) throws Exception {
+    	BufferedReader reader = null;
+    	
+	    try {
+		    URL url = new URL(urlString);
+		    StringBuilder sb = new StringBuilder();
+		    
+		    reader = new BufferedReader(new InputStreamReader(url.openStream(), Charset.forName("UTF-8")));
+		    
+		    int cp;
+			while ((cp = reader.read()) != -1) { 
+				sb.append((char) cp);
+	        }
+			
+			return sb.toString();  
+	    } finally {
+	    	reader.close();
+	    }
+	}
    
 }
