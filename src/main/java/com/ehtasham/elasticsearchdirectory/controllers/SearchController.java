@@ -1,9 +1,12 @@
 package com.ehtasham.elasticsearchdirectory.controllers;
 
+import com.ehtasham.elasticsearchdirectory.models.ElasticSearchDirectory;
 import com.ehtasham.elasticsearchdirectory.services.ElasticSeacrhService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.domain.Page;
@@ -47,11 +50,13 @@ public class SearchController {
 	*/
 	
     @GetMapping("/search")
-    public Page<?> search(HttpServletRequest httpServletRequest, 
+    public Iterable<ElasticSearchDirectory> search(HttpServletRequest httpServletRequest, 
     		@PageableDefault(value = 10, page = 0) Pageable pageable){
     	//return httpServletRequest.getParameterMap();
     	
-    	return this.elasticSeacrhService.search(httpServletRequest.getParameterMap(), pageable);
+    	//Map<String, String[]> query = httpServletRequest.getQueryString();
+    	
+    	return this.elasticSeacrhService.search(httpServletRequest, pageable);
     }
     
     /*

@@ -1,6 +1,7 @@
 package com.ehtasham.elasticsearchdirectory.config;
 
 import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -26,11 +27,19 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 })
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class })
 public class ElasticSearchConfig {
-		
+	@Value("${elasticsearch.cluster-name}")
+    private String clusterName;
+
+    @Value("${elasticsearch.port}")
+    private int port;
+
+    @Value("${elasticsearch.host}")
+    private String host;
+    
 	@Bean
 	RestHighLevelClient client() {
 	   ClientConfiguration clientConfiguration = ClientConfiguration.builder()
-			   										.connectedTo("localhost:9200")
+			   										.connectedTo(host + ":" + port)
 			   										.build();
 
 	   return RestClients.create(clientConfiguration)
@@ -41,5 +50,4 @@ public class ElasticSearchConfig {
 	public ElasticsearchOperations elasticsearchTemplate() {
 	   return new ElasticsearchRestTemplate(client());
 	}
-	
 }

@@ -1,14 +1,14 @@
 package com.ehtasham.elasticsearchdirectory.services;
 
+import com.ehtasham.elasticsearchdirectory.models.ElasticSearchDirectory;
 import com.ehtasham.elasticsearchdirectory.repository.ElasticSearchRepository;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
-import java.util.Map;
-
+import javax.servlet.http.HttpServletRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
@@ -27,16 +27,28 @@ public class ElasticSeacrhService {
         this.searchRepository = searchRepository;
     }
 
-    public Page<?> search(Map<String, String[]> map, Pageable pageable) {
+    public Iterable<ElasticSearchDirectory> search(HttpServletRequest httpServletRequest, Pageable pageable) {
         BoolQueryBuilder searchQuery = QueryBuilders.boolQuery();
-        if (map != null && !map.isEmpty()) {
-            MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(map);
-            searchQuery.must(multiMatchQuery);
+
+        String query =  httpServletRequest.getQueryString();
+        
+        if (query != null && !query.isEmpty()) {
+        	query = query.replaceAll("=", ":").replaceAll("&", " AND ");
+        	
+        	return searchRepository.search(QueryBuilders.queryStringQuery("("+ query +")"));
+        } else {
+        	NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+            queryBuilder.withQuery(searchQuery).withPageable(pageable);
+            
+            return searchRepository.search(queryBuilder.build());
         }
         
-        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
-        queryBuilder.withQuery(searchQuery).withPageable(pageable);
-        
-        return searchRepository.search(queryBuilder.build());
+    }
+    
+    //prepare query parameters
+    private Object mapQuery(HttpServletRequest params) {
+    	return Collections.list(params.getParameterNames())
+        .stream()
+        .collect(Collectors.toMap(parameterName -> parameterName, params::getParameterValues));
     }
 }

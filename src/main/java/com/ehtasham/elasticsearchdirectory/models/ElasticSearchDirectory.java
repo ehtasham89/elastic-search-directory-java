@@ -6,10 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import static org.springframework.data.elasticsearch.annotations.FieldType.Nested;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,36 +27,45 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName = "accounts")
+@Document(indexName = "mobiledirectory")
 public class ElasticSearchDirectory {
     @Field(type = FieldType.Text)
     @Id
     private String id;
-    @Field(type = FieldType.Integer)
-    @JsonProperty("account_number")
-    private int accountNumber;
-    @Field(type = FieldType.Integer)
-    @JsonProperty("balance")
-    private int balance;
+    
     @Field(type = FieldType.Text)
-    @JsonProperty("first_name")
-    private String firstName;
+    @JsonProperty("brand")
+    private String brand;
+    
     @Field(type = FieldType.Text)
-    @JsonProperty("last_name")
-    private String lastName;
+    @JsonProperty("phone")
+    private String phone;
+    
     @Field(type = FieldType.Text)
-    @JsonProperty("address")
-    private String address;
+    @JsonProperty("picture")
+    private String picture;
+    
+    @Field(type = Nested, includeInParent = true)
+    @JsonProperty("release")
+    private List<Release> release;
+    
     @Field(type = FieldType.Text)
-    @JsonProperty("email")
-    private String email;
+    @JsonProperty("sim")
+    private String sim;
+    
     @Field(type = FieldType.Text)
-    @JsonProperty("city")
-    private String city;
-    @Field(type = FieldType.Text)
-    @JsonProperty("state")
-    private String state;
-    @Field(type = FieldType.Integer)
-    @JsonProperty("age")
-    private int age;
+    @JsonProperty("resolution")
+    private String resolution;
+    
+    @Field(type = Nested, includeInParent = true)
+    @JsonProperty("hardware")
+    private List<Hardware> hardware;
+    
+    public List<Hardware> getHardware() {
+        return hardware;
+    }
+
+    public List<Release> getRelease(){
+    	return release;
+    }
 }
