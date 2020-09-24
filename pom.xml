@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ehtasham</groupId>
-	<artifactId>phonedirectory</artifactId>
+	<artifactId>elasticsearchdirectory</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>phonedirectory</name>
-	<description>Phone directory Search Engin</description>
+	<name>elasticsearchdirectory</name>
+	<description>Elastic Seach Phone Directory</description>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -22,6 +22,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+			<version>2.3.4.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -45,6 +46,15 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
 	</dependencies>
 
 	<build>
