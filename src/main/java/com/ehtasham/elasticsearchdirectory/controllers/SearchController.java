@@ -1,15 +1,25 @@
 package com.ehtasham.elasticsearchdirectory.controllers;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -22,7 +32,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ehtasham.elasticsearchdirectory.models.ElasticSearchDirectory;
 import com.ehtasham.elasticsearchdirectory.services.ElasticSeacrhService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -51,37 +64,53 @@ public class SearchController<JSONArray> {
 	 * /search?announceDate=1999&price=200. Will return 2 devices. 
 	*/
 	
-    @GetMapping("/search")
-    public Iterable<ElasticSearchDirectory> search(HttpServletRequest httpServletRequest, 
+    @GetMapping("/el-search")
+    public Iterable<ElasticSearchDirectory> eSearch(HttpServletRequest httpServletRequest, 
     		@PageableDefault(value = 10, page = 0) Pageable pageable){
 
     	return this.elasticSeacrhService.search(httpServletRequest, pageable);
     }
     
+    @GetMapping("/search")
+    @Async
+    public JsonNode search() throws Exception {
+    	String jsonUrl = "https://a511e938-a640-4868-939e-6eef06127ca1.mock.pstmn.io/handsets/list";
+    	
+    	String jsonDocument = readUrlData(jsonUrl);
+	    
+    	ObjectMapper mapper = new ObjectMapper();
+		
+    	JsonNode node = mapper.readTree(jsonDocument);
+    	
+    	return node.get(1);
+    }
     
     @GetMapping("/load-data")
     @Async
-    public Collection<ElasticSearchDirectory> JsonBulkImport(InputStream in) throws Exception {
-    	int numberOfRecords=0;
-    	
-    	String jsonUrl = "https://a511e938-a640-4868-939e-6eef06127ca1.mock.pstmn.io/handsets/list";
-    	
-    	String jsonDocument;
-
-	    jsonDocument = readUrl(jsonUrl);
+    public String JsonBulkImport() throws Exception {
+    	try {
+	    	int numberOfRecords=0;
 	    	
-	    	Gson gson = new Gson(); 
+	    	String jsonUrl = "https://a511e938-a640-4868-939e-6eef06127ca1.mock.pstmn.io/handsets/list";
 	    	
-	    	Type collectionType = new TypeToken<Collection<ElasticSearchDirectory>>(){}.getType();
-	    	Collection<ElasticSearchDirectory> enums = gson.fromJson(jsonDocument, collectionType);
-	    	
-	    	//ElasticSearchDirectory docs = gson.fromJson(jsonDocument, ElasticSearchDirectory.class);
-	    	
-	    	return enums;
+	    	String jsonDocument = readUrlData(jsonUrl);
+		    
+	    	ObjectMapper mapper = new ObjectMapper();
+			
+	    	List<ElasticSearchDirectory> myObjects = mapper.readValue(jsonDocument, new TypeReference<List<ElasticSearchDirectory>>(){});
+			
+			for(ElasticSearchDirectory obj: myObjects) {
+				numberOfRecords += this.elasticSeacrhService.insertNew(obj);
+			}
+			
+			return "Total nummber of records loaded: " + numberOfRecords;
+    	}catch(Exception e) {
+    		return e.getMessage();
+    	}
     }
     	
     @Async
-	private static String readUrl(String urlString) throws Exception {
+	private static String readUrlData(String urlString) throws Exception {
     	BufferedReader reader = null;
     	
 	    try {

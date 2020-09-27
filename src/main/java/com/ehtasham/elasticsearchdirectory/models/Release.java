@@ -23,4 +23,9 @@ public class Release {
 		
 		return false;	
 	}
+	
+	@Override
+    public String toString() {
+        return "Release{announceDate=" + announceDate + ", priceEur=" + priceEur + "}";
+    }
 }

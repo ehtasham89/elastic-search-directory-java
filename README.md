@@ -9,6 +9,6 @@ Configure Elastic search connection in application.properties file.
 
 import data into elasticseach db with REST API: http://localhost:{port}/mobile/load-data
 
-search data in mobile directory with any property http://localhost:{port}/mobile/search?announceDate=1999&price=200 Will return 2 devices.
+search data in mobile directory with any property http://localhost:{port}/mobile/el-search?announceDate=1999&price=200 Will return 2 devices.
 
 

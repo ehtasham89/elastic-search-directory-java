@@ -34,13 +34,14 @@ public class ElasticSeacrhService {
         this.direcotoryModel = elasticSearchDirectory;
     }
 
-    public ElasticSearchDirectory create(ElasticSearchDirectory document) {
-    	//IndexRequest request = new IndexRequest("people");
-        ///request.source(document, XContentType.JSON);
-    	
-    	System.out.println(document.toString());
-    	
-        return (ElasticSearchDirectory) searchRepository.save(document);
+    public int insertNew(ElasticSearchDirectory document) {
+    	try {
+    		searchRepository.save(document); //insert into elastic search db
+    		
+    		return 1;
+    	}catch(Exception e) {
+    		return 0;
+    	}
     }
     
     public Iterable<ElasticSearchDirectory> search(HttpServletRequest httpServletRequest, Pageable pageable) {

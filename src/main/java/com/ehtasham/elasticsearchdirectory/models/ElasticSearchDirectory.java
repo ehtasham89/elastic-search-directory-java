@@ -7,9 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -28,7 +25,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName = "mobiledirectory")
+@Document(indexName = "mobiledirectory9")
 public class ElasticSearchDirectory {
     @Field(type = FieldType.Text)
     @Id
@@ -36,19 +33,19 @@ public class ElasticSearchDirectory {
     
     @Field(type = FieldType.Text)
     @JsonProperty("brand")
-    private String brand;
+    public String brand;
     
     @Field(type = FieldType.Text)
     @JsonProperty("phone")
     private String phone;
     
     @Field(type = FieldType.Text)
-    @JsonProperty("pictures")
+    @JsonProperty("picture")
     private String picture;
     
     @Field(type = Nested, includeInParent = true)
     @JsonProperty("release")
-    private List<Release> release;
+    private Release release;
     
     @Field(type = FieldType.Text)
     @JsonProperty("sim")
@@ -60,8 +57,7 @@ public class ElasticSearchDirectory {
     
     @Field(type = Nested, includeInParent = true)
     @JsonProperty("hardware")
-    private List<Hardware> hardware;
-    
+    private Hardware hardware;
 
     public Hardware getHardware(){
         return new Hardware();
@@ -70,4 +66,14 @@ public class ElasticSearchDirectory {
     public Release getRelease(){
     	return new Release();
     }
+    
+    public void setHardware(Hardware hardware) {
+        this.hardware = hardware;
+    }
+    
+    @Override
+    public String toString() {
+        return "ElasticSearchDirectory{" + "id='" + id + '\'' + ", brand='" + brand + '\'' + ", phone=" + phone + ", picture=" + picture + ", release=" + release + ", sim=" + sim + ", resolution=" + resolution + ", hardware=" + hardware + '}';
+    }
+
 }
