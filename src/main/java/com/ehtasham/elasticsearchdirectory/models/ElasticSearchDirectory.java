@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName = "mobiledirectory15")
+@Document(indexName = "mobiledirectory16")
 public class ElasticSearchDirectory {
     @Field(type = FieldType.Text)
     @Id
