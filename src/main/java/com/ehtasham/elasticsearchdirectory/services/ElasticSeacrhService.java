@@ -1,22 +1,18 @@
 package com.ehtasham.elasticsearchdirectory.services;
 
-import com.ehtasham.elasticsearchdirectory.models.ElasticSearchDirectory;
-import com.ehtasham.elasticsearchdirectory.repository.ElasticSearchRepository;
-
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
+
+import com.ehtasham.elasticsearchdirectory.models.ElasticSearchDirectory;
+import com.ehtasham.elasticsearchdirectory.repository.ElasticSearchRepository;
 
 /**
  * Elastic Search Service
@@ -45,14 +41,13 @@ public class ElasticSeacrhService {
     }
     
     public Iterable<ElasticSearchDirectory> search(HttpServletRequest httpServletRequest, Pageable pageable) {
-        BoolQueryBuilder searchQuery = QueryBuilders.boolQuery();
-
         String query =  httpServletRequest.getQueryString();
         
         if (query != null && !query.isEmpty()) {
-        	System.out.println(this.mapQuery(httpServletRequest));
         	return searchRepository.search(QueryBuilders.queryStringQuery(this.mapQuery(httpServletRequest)));
         } else {
+        	BoolQueryBuilder searchQuery = QueryBuilders.boolQuery();
+        	
         	NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
             queryBuilder.withQuery(searchQuery).withPageable(pageable);
             

@@ -1,18 +1,23 @@
 package com.ehtasham.elasticsearchdirectory.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import static org.springframework.data.elasticsearch.annotations.FieldType.Nested;
+
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import static org.springframework.data.elasticsearch.annotations.FieldType.Nested;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Elastic Search Directory Data Model
@@ -25,7 +30,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName = "mobiledirectory9")
+@Document(indexName = "mobiledirectory15")
 public class ElasticSearchDirectory {
     @Field(type = FieldType.Text)
     @Id
@@ -33,7 +38,7 @@ public class ElasticSearchDirectory {
     
     @Field(type = FieldType.Text)
     @JsonProperty("brand")
-    public String brand;
+    private String brand;
     
     @Field(type = FieldType.Text)
     @JsonProperty("phone")
@@ -43,9 +48,13 @@ public class ElasticSearchDirectory {
     @JsonProperty("picture")
     private String picture;
     
+    
+    @JsonIgnore
+    private Release release;
+    
     @Field(type = Nested, includeInParent = true)
     @JsonProperty("release")
-    private Release release;
+    private Release _release;
     
     @Field(type = FieldType.Text)
     @JsonProperty("sim")
@@ -55,10 +64,19 @@ public class ElasticSearchDirectory {
     @JsonProperty("resolution")
     private String resolution;
     
+    
+    @JsonIgnore
+    private Hardware hardware;
+    
     @Field(type = Nested, includeInParent = true)
     @JsonProperty("hardware")
-    private Hardware hardware;
+    private Hardware _hardware;
 
+
+    public ElasticSearchDirectory() {
+ 
+    }
+    
     public Hardware getHardware(){
         return new Hardware();
     }
@@ -67,8 +85,18 @@ public class ElasticSearchDirectory {
     	return new Release();
     }
     
-    public void setHardware(Hardware hardware) {
-        this.hardware = hardware;
+    @SuppressWarnings("unchecked")
+    @JsonProperty("release")
+    private void unpackRelease(Map<String, Object> obj) {
+    	_release = new Release(obj.get("announceDate").toString(), obj.get("priceEur").toString());
+    	
+    }
+    
+    @SuppressWarnings("unchecked")
+    @JsonProperty("hardware")
+    private void unpackHardware(Map<String, Object> obj) {
+    	_hardware = new Hardware(obj.get("audioJack").toString(), obj.get("gps").toString(), obj.get("battery").toString());
+    	
     }
     
     @Override
